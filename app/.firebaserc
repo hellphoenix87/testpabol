@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "serverless-dev-20231020t00"
+  },
+  "targets": {
+    "serverless-dev-20231020t00": {
+      "hosting": {
+        "backoffice": [
+          "backoffice-serverless-dev-20231020t00"
+        ],
+        "app": [
+          "serverless-dev-20231020t00"
+        ]
+      }
+    }
+  }
+}

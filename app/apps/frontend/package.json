@@ -1,0 +1,10 @@
+{
+  "name": "@paramax_repo/frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test:unit": "vitest run --coverage",
+    "test:unit-dev": "vitest"
+  }
+}

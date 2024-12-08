@@ -1,0 +1,22 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+  
+  // /b/{bucket}/o/{creatorId} contains files related to users (Images for his creations, generated videos, etc.)
+  // Only users with the same ID as the creatorId can read and write to this folder
+  // Users with the email ending in @paramax or @pabolo can also read and write to this folder (for back-office app)
+  match /b/{bucket}/o/{creatorId} {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null && ( request.auth.uid == creatorId || request.auth.token.email.matches(".*@paramax.ai") || request.auth.token.email.matches(".*@pabolo.ai"));
+    }
+    // /b/{bucket}/o/{creatorId}/images contains user's images that should be public (avatar image, header image, etc.) 
+    // Anyone can read from this folder but only the user can write to it
+    match /images/{allPaths=**} {
+      allow read: if true;
+    }
+  }
+}

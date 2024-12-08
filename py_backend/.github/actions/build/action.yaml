@@ -1,0 +1,108 @@
+---
+name: Build
+
+runs:
+  using: composite
+  steps:
+    - name: Set env vars
+      shell: bash
+      run: |
+        echo "GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)" >>$GITHUB_ENV
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2.0.0
+      id: auth
+      with:
+        workload_identity_provider: ${{ env.GCP_WORKLOAD_ID }}
+        service_account: ${{ env.GCP_WORKLOAD_SA }}
+        create_credentials_file: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+
+    - name: Configure Docker with GCloud credentials
+      shell: bash
+      run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5.3.0
+      with:
+        images: ${{ env.GCP_ARTIFACT_REPO }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          ${{ env.GIT_SHA_SHORT }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5.1.0
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT
+          BUCKET_ASSET=${{ env.BUCKET_ASSET }}
+        secret-files: |
+          creds=${{ steps.auth.outputs.credentials_file_path }}
+        cache-from: type=registry,ref=${{ env.GCP_ARTIFACT_REPO }}:buildcache
+        cache-to: type=registry,ref=${{ env.GCP_ARTIFACT_REPO }}:buildcache,mode=max
+
+    - name: Set up Cloud SDK for gsutil
+      uses: google-github-actions/setup-gcloud@v2.0.0
+
+    - name: Bucket Sync - versioned
+      shell: bash
+      run: |
+        set -euo pipefail
+        source .env.ci
+
+        declare -A buckets
+        buckets["gs://${{ env.BUCKET_ASSET }}"]="gs://asset-precompute-20231119/${PRECOMPUTE_ASSET_VER}"
+        buckets["gs://${{ env.BUCKET_MUSICDB }}"]="gs://musicdb-precompute-20231119/${PRECOMPUTE_MUSICDB_VER}"
+        buckets["gs://${{ env.BUCKET_SOUND }}"]="gs://sound-precompute-20231119/${PRECOMPUTE_SOUND_VER}"
+        buckets["gs://${{ env.BUCKET_VOICEDB }}"]="gs://voicedb-precompute-20231119/${PRECOMPUTE_VOICEDB_VER}"
+
+        for bucket_to in "${!buckets[@]}"; do
+            bucket_from="${buckets[${bucket_to}]}"
+            version=${bucket_from##*/}
+            echo "[INFO] Bucket from: $bucket_from"
+            echo "[INFO] Bucket to:   $bucket_to"
+            echo "[INFO] Version:     $version"
+            if gsutil ls "${bucket_to}/${version}" >/dev/null; then
+                echo "[INFO] Exiting, version already present"
+                continue
+            fi
+            gsutil -m rsync -r "$bucket_from" "${bucket_to}/${version}"
+            echo ""
+        done
+
+    - name: Bucket Sync - public
+      shell: bash
+      run: |
+        set -euo pipefail
+        source .env.ci
+
+        bucket_from="gs://appspot-precompute-20231119"
+        bucket_to="gs://${{ env.BUCKET_PUBLIC }}"
+        bucket_ver="version.txt"
+
+        if gsutil ls "${bucket_to}/${bucket_ver}"; then
+            echo "[INFO] version.txt file already present, checking the content..."
+            ver_ref=$(gsutil cat "${bucket_from}/${bucket_ver}")
+            ver_cur=$(gsutil cat "${bucket_to}/${bucket_ver}")
+            echo "[INFO] - reference: $ver_ref"
+            echo "[INFO] - current:   $ver_cur"
+            if [ "$ver_ref" == "$ver_cur" ]; then
+                echo "[INFO] Exiting, version already present"
+                exit 0
+            fi
+        fi
+
+        echo "[INFO] Copying.."
+        gsutil -m rsync -r "${bucket_from}/avatars" "${bucket_to}/avatars"
+        gsutil -m rsync -r "${bucket_from}/demo" "${bucket_to}/demo"
+        gsutil cp "${bucket_from}/${bucket_ver}" "${bucket_to}/${bucket_ver}"

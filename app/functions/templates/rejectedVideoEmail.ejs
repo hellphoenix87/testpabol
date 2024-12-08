@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify your email for Pabolo.ai</title>
+    <%- include('emailStyle'); -%>
+</head>
+ <body>
+  <div class="email-body">
+      <div class="container">
+        <div class="content">
+
+          <!-- START CENTERED WHITE CONTAINER -->
+          <div class="email-main">
+
+            <!-- START MAIN CONTENT AREA -->
+              <div class="wrapper">
+                <div class="email-message">
+                    <p>Dear <%= displayName %>,</p>
+
+                    <p>We regret to inform you that after a thorough review, your movie submission, <%= movieTitle %>, did not meet our approval criteria for publication on the pabolo platform. We understand that this may be disappointing, and we'd like to provide you with some insights into the reasons behind this decision.</p>
+
+                    <%if (reason && reason?.length > 0) {%>  <p>Reason for Rejection: <%= reason %></p>  <%}%>
+
+                    <%if (comment && comment?.length > 0) {%>  <p>Additional Reviewer Comments: <%= comment %></p>  <%}%>
+
+                    <p>We understand the hard work and dedication that goes into creating a movie, and our decision is not made lightly. Please know that our goal is to maintain a high-quality standard for content on our platform.</p>
+
+                    <p>If you have any questions or would like further clarification regarding the rejection, please do not reply to this email, as it is not monitored for user communication. Instead, we encourage you to reach out to our support team on <a href="https://discord.gg/mnZQCFZfAS">pabolo Discord</a>.</p>
+
+                    <p>We value your creative contributions and encourage you to continue improving your content. While "<%= movieTitle %>" may not have met our criteria this time, we hope you will consider submitting future work that aligns with our platform's standards.</p>
+
+                    <p>Regards,</p>
+
+                    <p>The pabolo Team</p>
+                </div>
+              </div>
+
+          <!-- END MAIN CONTENT AREA -->
+          </div>
+          <!-- END CENTERED WHITE CONTAINER -->
+
+          <%- include('emailFooter'); -%>
+
+        </div>
+      </div>
+  </div>
+ </body>
+</html>

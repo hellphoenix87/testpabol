@@ -1,0 +1,23 @@
+Example Locations:
+Name: Gary's garage
+Description: Inside of a 1960's garage. Clean and tidy. Tools hanging on the wall. Dim lighting.
+
+Name: Gary's house (outside)
+Description: Outside of a 1960's garage. A few cars are parked in front of it. American village. It's a sunny day.
+
+Name: Dr. Smith's office
+Description: Inside of a medical doctor's office. A desk with a computer. A few chairs. A bookshelf. A window.
+
+Name: Schoolyard (day)
+Description: Outside of a modern school. A few kids are playing. It's a sunny day.
+
+Name: School Classroom
+Description: Inside of a classroom. A teacher is writing on the blackboard. The classroom is full of students.
+
+Here's the movie for which you should list the locations:
+
+Plot: "{{PLOT}}"
+
+Write a location list of all locations that will be used in the movie. The name should be short. The description should contain visual, lighting and cinematographic info. No sentences, only short key points. Variants of the location (indoor, outdoor, night, day, ...) are listed separately.
+Add locations to allow shots between the main locations, e.g. streets, parking spots, other rooms in the building etc. Always generate the locations in the format of example shown above. Start every location in the list with "Name:".
+Ensure that there's a location for each part of the story. Usually, a movie has about 10 locations. It can be less if the movie takes only place in one place. Finish your list if you think you added all locations.

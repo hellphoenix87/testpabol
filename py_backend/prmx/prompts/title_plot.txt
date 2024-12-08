@@ -1,0 +1,19 @@
+{{META}}
+{{USER_INSTRUCTION}}
+Write the scene summaries of a short movie plot. Make every word count. Explicitly describe each step of the story and main characters. Design layered characters with desires and flaws. Ensure distinct voices and clear arcs. The story should include setup, confrontation/climax, resolution.
+
+Every paragraph should correspond to a scene of the plot. Mention the location of the scene. Don't add boilerplate like a summary at the beginning or end. Just write a list of scenes, one per paragraph. Don't add titles. Only write the description per scene. Use max. 5 (five) scenes. Every scene has a music soundtrack description to it.
+
+Example:
+Scene 2: Detectives Sarah Martinez and Mike Reynolds convene in their office to review evidence in their ongoing case. A breakthrough occurs as they uncover security footage linking a shadowy figure to the mysterious disappearances they're investigating. With newfound determination, they leave the office to rush to an ominous apartment building where they believe their suspect may be hiding.
+Music: Steady, suspenseful jazz with orchestral crescendos.
+
+Scene 3: When Detectives Sarah Martinez and Mike Reynolds arrived at the apartment building, they immediately noticed an open door. With their weapons drawn, they quietly entered the building. Unexpectedly, Sarah revealed her true intentions by turning her weapon toward Mike. It was an ambush, and she was determined to make it look like an accident while trying to kill him. In a swift turn of events, Mike managed to overpower Sarah and urgently called for backup from his colleagues, preventing her sinister plan from succeeding.
+Music: Tense, dramatic strings with unexpected dissonant chords.
+
+End of example.
+
+Movie title: "<<TITLE, max_tokens=20, stop=['"']>>"
+
+5 scenes summaries with music description (no titles):
+Scene 1: <<SCENES, max_tokens=700>>

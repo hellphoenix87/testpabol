@@ -1,0 +1,113 @@
+---
+name: Create PR in app
+
+on:
+  workflow_call: # allow this workflow to be called from other workflows
+    secrets:
+      pr-github-app-id:
+        description: GitHub App ID
+        required: true
+      pr-github-app-private-key:
+        description: GitHub App private key
+        required: true
+  workflow_dispatch:
+
+jobs:
+  remote-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required to checkout
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          # Check out the current branch instead of the default merge commit on pull_request event
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/create-github-app-token@v1.6.2
+        id: app-token
+        with:
+          # secret.pr-... are avaiable when triggered by workflow_call (main)
+          # secret.PR_... are avaiable when manually triggered (workflow_dispatch)
+          app-id: ${{ secrets.pr-github-app-id || secrets.PR_GITHUB_APP_ID }}
+          private-key: ${{ secrets.pr-github-app-private-key || secrets.PR_GITHUB_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: app
+
+      - name: Checkout remote repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: "${{ github.repository_owner }}/app"
+          ref: main
+          path: remote
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+
+      - name: Create remote pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)
+          echo "GIT_SHA_SHORT: $GIT_SHA_SHORT"
+          LOCAL_BRANCH=${{ github.head_ref || github.ref_name }}
+          echo "LOCAL_BRANCH: $LOCAL_BRANCH"
+          REMOTE_BRANCH="pybackend-${LOCAL_BRANCH}"
+          echo "REMOTE_BRANCH: $REMOTE_BRANCH"
+          cd remote
+
+          git_username="ci-pybackend-app" # GitHub App name
+          git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${git_username}:${GH_TOKEN}@github.com/g")
+          git config --global user.name "${git_username}"
+          git config --global user.email "${{ secrets.pr-github-app-id || secrets.PR_GITHUB_APP_ID }}+${git_username}[bot]@users.noreply.github.com"
+
+          git checkout -B "$REMOTE_BRANCH"
+
+          sed -e "s|const BACKEND_REV.*|const BACKEND_REV = \"$GIT_SHA_SHORT\";|" \
+              -i globalConfig.js
+
+          git add .
+          git commit -m "chore: update py_backend to $GIT_SHA_SHORT ($LOCAL_BRANCH)"
+          git push --force origin "$REMOTE_BRANCH"
+
+          pr_num=$(gh pr list --head "$REMOTE_BRANCH" --base "main" --state open --json number --jq 'length')
+          if (( $pr_num > 0 )); then
+              echo "[INFO] PR already existing, exiting..."
+              exit 0
+          fi
+          gh_out=$(gh pr create \
+              --body "Do not merge this PR if the title does not end with 'main', i.e. test and close." \
+              --title "chore: update py_backend to $LOCAL_BRANCH" \
+              --head "$REMOTE_BRANCH" \
+              --base "main")
+          echo "Remote PR: $gh_out" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "pr_url=$gh_out" | tee -a "$GITHUB_OUTPUT"
+    outputs:
+      pr_url: ${{ steps.pr.outputs.pr_url }}
+
+  local-pr-comment:
+    needs: remote-pr
+    if: github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required to checkout
+      pull-requests: write # Required to comment on the PR
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Comment pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ needs.remote-pr.outputs.pr_url }}
+        run: |
+          if [ -z "$PR_URL"]; then
+              echo "[INFO] PR url unchanged, exiting"
+              exit 0
+          fi
+
+          LOCAL_BRANCH=${{ github.head_ref || github.ref_name }}
+          echo "LOCAL_BRANCH: $LOCAL_BRANCH"
+          pr_id=$(gh pr list --head "$LOCAL_BRANCH" --json number --jq '.[0].number')
+          echo "PR ID: $pr_id"
+          gh pr comment "$pr_id" --body "New PR in app created: $PR_URL"

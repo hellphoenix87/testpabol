@@ -1,0 +1,31 @@
+---
+name: Linter
+
+on:
+  workflow_call: # allow this workflow to be called from other workflows
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: psf/black@stable
+        with:
+          options: "--check --diff --verbose"
+
+  compare-env:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      GOOGLE_CLOUD_PROJECT_REF: ${{ vars.GOOGLE_CLOUD_PROJECT }}
+      BUCKET_ASSET_REF: ${{ vars.BUCKET_ASSET }}
+      INFERENCE_DOMAIN_REF: ${{ vars.INFERENCE_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - shell: bash
+        run: |
+          set -euo pipefail
+          source .env
+          [[ "$GOOGLE_CLOUD_PROJECT" = "$GOOGLE_CLOUD_PROJECT_REF" ]] || (echo "GOOGLE_CLOUD_PROJECT is different" && exit 1)
+          [[ "$BUCKET_ASSET" = "$BUCKET_ASSET_REF" ]] || (echo "BUCKET_ASSET is different" && exit 1)
+          [[ "$INFERENCE_DOMAIN" = "$INFERENCE_DOMAIN_REF" ]] || (echo "INFERENCE_DOMAIN is different" && exit 1)

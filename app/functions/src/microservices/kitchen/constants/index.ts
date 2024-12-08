@@ -1,0 +1,13 @@
+enum COOK_VIDEO_STEPS {
+  PREPARATION = "PREPARATION",
+  ANIMATING = "ANIMATING",
+  BAKING = "BAKING",
+  MERGING = "MERGING",
+}
+
+export const COOK_VIDEO_PERCENTAGES = {
+  [COOK_VIDEO_STEPS.PREPARATION]: { start: 0, end: 5 },
+  [COOK_VIDEO_STEPS.ANIMATING]: { start: 5, end: 75 },
+  [COOK_VIDEO_STEPS.BAKING]: { start: 75, end: 95 },
+  [COOK_VIDEO_STEPS.MERGING]: { start: 95, end: 100 },
+};

@@ -1,0 +1,9 @@
+numpy
+transformers
+tqdm
+torch
+pydub
+diffusers
+omegaconf
+pyarrow
+pandas

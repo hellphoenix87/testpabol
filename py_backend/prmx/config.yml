@@ -1,0 +1,18 @@
+# set of standardized runtime profiles:
+# select w/ argument when instantiating config.Config or through PRMX_PROFILE env var otherwise
+profiles:
+  # the 'default' profile is meant to most closely follow production requirements
+  # yet, profiles are different than environments and 'default' can very well run on stage
+  default:
+    mock_generative_apis: false
+    log_llm_prompts: false
+  # the 'test' profile scales down production requirements to speed up testing efficiently:
+  # it is not meant to catch stochastic edge cases, but obvious bugs on newly-generated data
+  test:
+    mock_generative_apis: false
+    log_llm_prompts: true
+  # the 'mock' profile is similar to test but also substitutes generative api calls with stubs, i.e.
+  # LLM responses come from pre-sampled output for reproducible & offline testing
+  mock:
+    mock_generative_apis: true
+    log_llm_prompts: false

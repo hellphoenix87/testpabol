@@ -1,0 +1,58 @@
+**/__pycache__/
+.venv
+
+#Ignore thumbnails created by Windows
+Thumbs.db
+
+#Ignore files built by Visual Studio
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+.vs/
+*.pyc
+*.code-workspace
+
+#Nuget packages folder
+packages/
+
+# api keys
+*_key.txt
+
+# runtime artefacts
+*_log/*
+runtime/*
+cache_model/*
+
+# Finder cache on MacOS
+.DS_Store
+
+# generated credentials from google-github-actions/auth
+gha-creds-*.json
+
+# Hugging Face cache
+.huggingface_cache/*
+
+# This is a debug output file during the LLM finetune data generation
+failed_reference_*.txt

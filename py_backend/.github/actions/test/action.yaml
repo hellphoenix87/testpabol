@@ -1,0 +1,44 @@
+---
+name: Test
+
+runs:
+  using: composite
+  steps:
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2.0.0
+      with:
+        workload_identity_provider: ${{ env.GCP_WORKLOAD_ID }}
+        service_account: ${{ env.GCP_WORKLOAD_SA }}
+        create_credentials_file: true
+
+    - name: Configure Docker with GCloud credentials
+      shell: bash
+      run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT }}
+
+    - name: Run tests
+      shell: bash
+      run: |
+        GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)
+        source .env.ci
+        docker run \
+            --env CI=true \
+            --env PYTHONPATH=. \
+            --env PRECOMPUTE_ASSET_VER="$PRECOMPUTE_ASSET_VER" \
+            --env PRECOMPUTE_MUSICDB_VER="$PRECOMPUTE_MUSICDB_VER" \
+            --env PRECOMPUTE_SOUND_VER="$PRECOMPUTE_SOUND_VER" \
+            --env PRECOMPUTE_VOICEDB_VER="$PRECOMPUTE_VOICEDB_VER" \
+            --env INFERENCE_DOMAIN="${{ env.INFERENCE_DOMAIN }}" \
+            --env GOOGLE_CLOUD_PROJECT="${{ env.GOOGLE_CLOUD_PROJECT }}" \
+            --env GOOGLE_APPLICATION_CREDENTIALS=/tmp/cred.json \
+            --volume "${PWD}/.git:/app/.git" \
+            --volume "${PWD}/test:/app/test" \
+            --volume "${PWD}/requirements-dev.txt:/app/requirements-dev.txt" \
+            --volume "${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/cred.json" \
+            --workdir /app \
+            --entrypoint bash \
+            "${{ env.GCP_ARTIFACT_REPO }}:$GIT_SHA_SHORT" -c """
+                git config --global --add safe.directory \$(realpath .)
+                git status
+                pip install --no-cache-dir -r requirements-dev.txt
+                pytest
+            """

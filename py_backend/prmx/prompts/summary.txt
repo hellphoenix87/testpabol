@@ -1,0 +1,6 @@
+{{META}}
+Movie Title: {{TITLE}}
+Plot:
+{{PLOT}}
+Write a very short summary of the plot above using 100 words or less without any spoilers. The summary should act as an exciting trailer for the movie.
+<<SUMMARY, max_tokens=200>>

@@ -1,0 +1,108 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": [
+    {
+      "target": "app",
+      "public": "apps/app/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "/cookVideo",
+          "function": {
+            "functionId": "R${GIT_SHA_SHORT}_kitchen",
+            "pinTag": false
+          }
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "backoffice",
+      "public": "apps/backoffice/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ],
+  "storage": [
+    {
+      "rules": "storage-media.rules",
+      "bucket": "$PABOLO_BUCKET_NAME_MEDIA_STORAGE"
+    },
+    {
+      "rules": "storage-auth-readonly.rules",
+      "bucket": "$PABOLO_BUCKET_NAME_MUSIC_STORAGE"
+    },
+    {
+      "rules": "storage-auth-readonly.rules",
+      "bucket": "$PABOLO_BUCKET_NAME_ASSET_STORAGE"
+    },
+    {
+      "rules": "storage-auth-readonly.rules",
+      "bucket": "$PABOLO_BUCKET_NAME_VOICE_STORAGE"
+    },
+    {
+      "rules": "storage-auth-readonly.rules",
+      "bucket": "$PABOLO_BUCKET_NAME_SOUND_STORAGE"
+    }
+  ],
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    }
+  ],
+  "extensions": {
+    "firestore-send-email": "firebase/firestore-send-email@0.1.30",
+    "mailchimp-firebase-sync": "mailchimp/mailchimp-firebase-sync@0.5.4",
+    "firestore-semantic-search": "googlecloud/firestore-semantic-search@0.1.7"
+  }
+}

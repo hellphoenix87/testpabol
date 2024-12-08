@@ -1,0 +1,31 @@
+# originally developed to select files in a Cloud Function build (deprecated),
+# safe to keep not to bloat other gcloud commands uploading files
+
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore, with the addition of
+# "#!include" directives (which insert the entries of the given .gitignore-style
+# file at that point).
+#
+# For more information, run:
+#   $ gcloud topic gcloudignore
+#
+#!include:.gitignore
+
+# ignore everything
+/[!.]*
+/.?*
+# except source files in prmx package
+!/prmx/**
+# main.py, requirements.txt in root
+!/main.py
+!/requirements.txt
+# but not python caches
+/prmx/__pycache__/**
+# and add local text variables to prevent environment mismatches
+#
+# need to whitelist the parent directory to allow subdirectories
+!/env/
+# and explicitly exclude all other directories except stage and prod
+/env/gcp/deploy
+/env/local
+# check files to be uploaded with `gcloud meta list-files-for-upload`

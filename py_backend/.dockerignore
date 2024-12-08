@@ -1,0 +1,19 @@
+# ignore everything
+*
+# except source files in prmx package
+!/prmx/**
+# main.py, requirements.txt, download.py in root
+!/main.py
+!/requirements.txt
+!/download.py
+# but not python caches
+**/__pycache__/**
+# add local text variables to prevent environment mismatches
+!/env/gcp/stage/*.txt
+!/env/gcp/prod/*.txt
+# add speech, music & default test assets for the mock profile
+!/assets/speech/**
+!/assets/music/**
+!/assets/default/**
+!/assets/audio/**
+!/assets/images/**

@@ -1,0 +1,20 @@
+# Genres list should be consistent with the list in the frontend
+genres = [
+    "action",
+    "adventure",
+    "biography",
+    "comedy",
+    "crime",
+    "drama",
+    "documentary",
+    "fantasy",
+    "history",
+    "horror",
+    "mystery",
+    "romance",
+    "sci-fi",
+    "sport",
+    "thriller",
+    "war",
+    "western",
+]

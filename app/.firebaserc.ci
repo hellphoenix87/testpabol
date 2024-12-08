@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "$GOOGLE_CLOUD_PROJECT"
+  },
+  "targets": {
+    "$GOOGLE_CLOUD_PROJECT": {
+      "hosting": {
+        "backoffice": [
+          "backoffice-$GOOGLE_CLOUD_PROJECT"
+        ],
+        "app": [
+          "$GOOGLE_CLOUD_PROJECT"
+        ]
+      }
+    }
+  }
+}

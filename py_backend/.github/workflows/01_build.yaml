@@ -1,0 +1,72 @@
+---
+name: Build
+
+on:
+  workflow_call: # allow this workflow to be called from other workflows
+
+env:
+  ENV: ${{ vars.ENV }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  GCP_WORKLOAD_ID: ${{ vars.GCP_WORKLOAD_ID }}
+  GCP_WORKLOAD_SA: ${{ vars.GCP_WORKLOAD_SA }}
+  GCP_ARTIFACT: ${{ vars.GCP_ARTIFACT }}
+  GCP_ARTIFACT_NAME: ${{ vars.GCP_ARTIFACT_NAME }}
+  GCP_ARTIFACT_REPO: ${{ vars.GCP_ARTIFACT_REPO }}
+  BUCKET_ASSET: ${{ vars.BUCKET_ASSET }}
+  BUCKET_MEDIA: ${{ vars.BUCKET_MEDIA }}
+  BUCKET_MUSICDB: ${{ vars.BUCKET_MUSICDB }}
+  BUCKET_PUBLIC: ${{ vars.BUCKET_PUBLIC }}
+  BUCKET_SOUND: ${{ vars.BUCKET_SOUND }}
+  BUCKET_VOICEDB: ${{ vars.BUCKET_VOICEDB }}
+  PULUMI_STATE: ${{ vars.PULUMI_STATE }}
+  PULUMI_SECRET: ${{ vars.PULUMI_SECRET }}
+  INFERENCE_DOMAIN: ${{ vars.INFERENCE_DOMAIN }}
+  GIT_REPO: ${{ github.event.repository.name }}
+  GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+          # Check out the current branch instead of the default merge commit on pull_request event
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Build
+        uses: ./.github/actions/build
+
+  stage:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment: stage
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: Build
+        uses: ./.github/actions/build
+
+  prod:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: Build
+        uses: ./.github/actions/build

@@ -1,0 +1,14 @@
+Possible IDs to describe movie shot types:
+{{SHOT_TYPE_DESC}}
+
+Locations in the movie:
+{{LOCATIONS}}
+
+Characters in the movie:
+{{CHARACTERS}}
+
+Translate the following movie script precisely into the shot notation.
+
+{{SCRIPT}}
+
+Here's the above movie script in a shot notation:

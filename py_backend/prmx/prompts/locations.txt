@@ -1,0 +1,5 @@
+Here's the movie for which you should list the locations:
+
+Plot: "{{PLOT}}"
+
+Write a location list of all locations that will be used in the movie:

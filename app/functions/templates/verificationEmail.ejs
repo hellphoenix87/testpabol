@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify your email for Pabolo.ai</title>
+    <%- include('emailStyle'); -%>
+</head>
+ <body>   
+  <div class="email-body">
+      <div class="container">
+        <div class="content">
+
+          <!-- START CENTERED WHITE CONTAINER -->
+          <div class="email-main">
+
+            <!-- START MAIN CONTENT AREA -->
+              <div class="wrapper">
+                <div class="email-message">
+                    <p>Hello,</p>
+    
+                    <p>Thank you for signing up for Pabolo.ai. To ensure the security of your account and to start enjoying our services, please verify your email address by clicking the link below:</p>
+                        
+                    <p><a href="<%= verificationLink %>">Verify Your Email</a></p>
+                        
+                    <p>If you are unable to click the link, please copy and paste the following URL into your browser's address bar:</p>
+                        
+                    <p><%= verificationLink %></p>
+                                
+                    <p>We look forward to share our AI movies with you or see you in the director’s seat by using our pabolo AI Movie Creator!</p>
+                        
+                    <p>A big “Thank You!” for your registration from the whole team at pabolo.</p>
+                </div>
+              </div>
+
+          <!-- END MAIN CONTENT AREA -->
+          </div>
+          <!-- END CENTERED WHITE CONTAINER -->
+
+          <%- include('emailFooter'); -%>
+
+        </div>
+      </div>
+  </div>
+ </body>
+</html>

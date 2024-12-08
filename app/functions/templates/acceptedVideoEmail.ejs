@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify your email for Pabolo.ai</title>
+    <%- include('emailStyle'); -%>
+</head>
+ <body>   
+  <div class="email-body">
+      <div class="container">
+        <div class="content">
+
+          <!-- START CENTERED WHITE CONTAINER -->
+          <div class="email-main">
+
+            <!-- START MAIN CONTENT AREA -->
+              <div class="wrapper">
+                <div class="email-message">
+                    <p>Dear <%= displayName %>,</p>
+
+                    <p>We are excited to let you know that your movie "<%= movieTitle %>" has been published as it met our approval criteria.</p>
+                            
+                    <p>You can now watch your movie on our website by simply clicking this link: <a href="<%= movieLink %>"><%= movieTitle %></a></p>
+                        
+                    <p>If you have any questions or need help, please don't reply to this email, as it is not monitored for user communication.</p>
+                        
+                    <p>To connect with our community and share feedback, we encourage you to join our Discord server: <a href="https://discord.gg/mnZQCFZfAS">pabolo Discord server</a></p>
+                                
+                    <p>Congratulations once again, and thank you for choosing pabolo!</p>
+                        
+                    <p>Warm regards,</p>
+
+                    <p>The pabolo Team</p>
+                </div>
+              </div>
+
+          <!-- END MAIN CONTENT AREA -->
+          </div>
+          <!-- END CENTERED WHITE CONTAINER -->
+
+          <%- include('emailFooter'); -%>
+
+        </div>
+      </div>
+  </div>
+ </body>
+</html>

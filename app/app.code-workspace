@@ -1,0 +1,82 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"Orta.vscode-jest",
+			"ms-playwright.playwright",
+			"Gruntfuggly.todo-tree",
+			"bradlc.vscode-tailwindcss",
+			"dbaeumer.vscode-eslint",
+			"github.vscode-github-actions",
+			"GitHub.copilot",
+			"GitHub.copilot-chat",
+			"ms-vscode.vscode-typescript-next",
+			"ZixuanChen.vitest-explorer"
+		]
+	},
+	"settings": {
+		"files.eol": "\n",
+		"editor.tabSize": 2,
+		"editor.wordWrapColumn": 100,
+		"[json]": {
+				"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[html]": {
+				"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[javascript]": {
+				"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[typescript]": {
+				"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
+		"github.copilot.enable": {
+			"*": true,
+			"plaintext": false,
+			"markdown": true,
+			"scminput": false
+		},
+		"playwright.reuseBrowser": false,
+		"playwright.showTrace": false,
+		"jest.disabledWorkspaceFolders": [
+			"functions/lib"
+		],
+		"jest.virtualFolders": [
+			{
+				"name": "Functions - server, mediator between client, DB, and APIs",
+				"rootPath": "functions",
+				"runMode": "watch"
+			},
+			{
+				"name": "Shared - shared functionality between client and server",
+				"rootPath": "shared",
+				"runMode": "watch"
+			}
+		],
+    "vitest.disabledWorkspaceFolders": [],
+    "vitest.exclude": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/cypress/**",
+        "**/.{idea,git,cache,output,temp}/**",
+        "**/tests/e2e/**",
+        "functions/**",
+				"shared/**"
+    ],
+    "vitest.debugExclude": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+        "**/tests/e2e/**",
+        "functions/**",
+				"shared/**"
+    ],
+    "vitest.commandLine": "npx vitest",
+    "vitest.enable": false,
+		"vitest.showFailMessages": true,
+		"testing.automaticallyOpenPeekView": "never"
+	}
+}

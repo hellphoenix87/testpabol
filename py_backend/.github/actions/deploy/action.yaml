@@ -1,0 +1,72 @@
+---
+name: Deploy
+
+inputs:
+  secret-openai:
+    description: OpenAI token
+    required: true
+  secret-inference_key:
+    description: Inference Key
+    required: true
+  secret-inference_client_id:
+    description: Inference Client ID
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set env vars
+      shell: bash
+      run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        export GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)
+        echo "GIT_SHA_SHORT=$GIT_SHA_SHORT" >>$GITHUB_ENV
+        echo "PULUMI_STACK=${GIT_REPO}-${GIT_BRANCH}-${GIT_SHA_SHORT}" >>$GITHUB_ENV
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2.0.0
+      with:
+        workload_identity_provider: ${{ env.GCP_WORKLOAD_ID }}
+        service_account: ${{ env.GCP_WORKLOAD_SA }}
+        create_credentials_file: true
+
+    - name: Pulumi - Setup
+      shell: bash
+      working-directory: env/gcp
+      run: bash ${GITHUB_WORKSPACE}/scripts/pulumi-setup.sh
+
+    - name: Pulumi - Preview
+      shell: bash
+      working-directory: env/gcp
+      env:
+        OPENAI_API_KEY: ${{ inputs.secret-openai }}
+        INFERENCE_KEY: ${{ inputs.secret-inference_key }}
+        INFERENCE_CLIENT_ID: ${{ inputs.secret-inference_client_id }}
+      run: |
+        set -o allexport
+        source "$(git rev-parse --show-toplevel)/.env.ci"
+        set +o allexport
+        pulumi preview --refresh
+        pulumi preview --diff
+
+    - name: Pulumi - Up
+      shell: bash
+      working-directory: env/gcp
+      env:
+        OPENAI_API_KEY: ${{ inputs.secret-openai }}
+        INFERENCE_KEY: ${{ inputs.secret-inference_key }}
+        INFERENCE_CLIENT_ID: ${{ inputs.secret-inference_client_id }}
+      run: |
+        set -o allexport
+        source "$(git rev-parse --show-toplevel)/.env.ci"
+        set +o allexport
+        pulumi up --yes
+
+    - name: Test
+      shell: bash
+      working-directory: env/gcp
+      run: |
+        pulumi stack output |
+          grep "service.*.url" |
+          awk '{print $2}' |
+          xargs curl --request OPTIONS --verbose

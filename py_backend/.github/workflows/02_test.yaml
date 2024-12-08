@@ -1,0 +1,62 @@
+---
+name: Test
+
+on:
+  workflow_call: # allow this workflow to be called from other workflows
+
+env:
+  GCP_WORKLOAD_ID: ${{ vars.GCP_WORKLOAD_ID }}
+  GCP_WORKLOAD_SA: ${{ vars.GCP_WORKLOAD_SA }}
+  GCP_ARTIFACT: ${{ vars.GCP_ARTIFACT }}
+  GCP_ARTIFACT_REPO: ${{ vars.GCP_ARTIFACT_REPO }}
+  INFERENCE_DOMAIN: ${{ vars.INFERENCE_DOMAIN }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  INFERENCE_KEY": ${{ secrets.INFERENCE_KEY }}
+  INFERENCE_CLIENT_ID": ${{ secrets.INFERENCE_CLIENT_ID }}
+
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+          # Check out the current branch instead of the default merge commit on pull_request event
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Test
+        uses: ./.github/actions/test
+
+  stage:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment: stage
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: Test
+        uses: ./.github/actions/test
+
+  prod:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: Test
+        uses: ./.github/actions/test

@@ -1,0 +1,5 @@
+Here's the movie for which you should list the characters:
+
+Plot: "{{PLOT}}"
+
+Write a character list of all required characters in the movie:

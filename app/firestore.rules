@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+
+  match /databases/{database}/documents {
+    // This collection contains creation data
+    // Only authenticated users with the same ID as the creatorId can read and write to this collection
+    match /creators/{creatorId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == creatorId;
+    }
+    // This collection contains user profile data
+    // Only authenticated users with the same ID as the uid can read and write to this collection
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // This collection contains videos metadata
+    // All users can read from this collection
+    // Only authenticated users can write to this collection
+    match /videos/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+
+  match /databases/{database}/documents {
+    // This collection contains semantic search indexes metadata
+    // Users cannot read and write to this collection
+    match /_ext-firestore-semantic-search/{document=**} {
+      // Deny read and write operations
+      allow read, write: if false;
+    }
+  }
+}

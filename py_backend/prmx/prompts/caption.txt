@@ -1,0 +1,11 @@
+A scene caption summarizes a scene into max. four words. Examples:
+
+- Alan's home
+- The big showdown
+- Who pays the price?
+- Introducing Emma
+
+Write a caption for this scene: "{{SCENE}}"
+
+Scene caption: <<CAPTION>>
+

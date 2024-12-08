@@ -1,0 +1,10 @@
+functions/.eslintrc.js
+functions/jsconfig.json
+functions/tsconfig.json
+functions/output
+functions/lib
+apps/app/dist
+apps/app/playwright
+apps/app/tests/unit/coverage
+apps/app/tests/e2e/README.md
+apps/backoffice/dist

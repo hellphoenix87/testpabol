@@ -1,0 +1,212 @@
+name: E2E Tests
+
+on:
+  workflow_call:
+    secrets:
+      GCP_SA_KEY:
+        required: true
+
+env:
+  # required by the app build to determine py_backend URL
+  ENV: ${{ vars.ENV }}
+  GOOGLE_CLOUD_PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT }}
+  PABOLO_PROJECT_ID: ${{ vars.GOOGLE_CLOUD_PROJECT }}
+  # see vite.config.ts for the list of env variables required by the app
+  PABOLO_APP_API_KEY: ${{ vars.APP_API_KEY }}
+  PABOLO_APP_AUTH_DOMAIN: ${{ vars.APP_AUTH_DOMAIN }}
+  PABOLO_APP_MESSAGING_SENDER_ID: ${{ vars.APP_MESSAGING_SENDER_ID }}
+  PABOLO_APP_ID: ${{ vars.APP_ID }}
+  PABOLO_BUCKET_NAME_ASSET_STORAGE: ${{ vars.BUCKET_ASSET }}
+  BUCKET_FIREBASE: ${{ vars.BUCKET_FIREBASE }}
+  PABOLO_TOPIC_GCP_PROJECT: ${{ vars.TOPIC_GCP_PROJECT }}
+  PABOLO_TOPIC_RESPONSE_VIDEOGEN: ${{ vars.TOPIC_RESPONSE_VIDEOGEN }}
+  PABOLO_BUCKET_NAME_MEDIA_STORAGE: ${{ vars.BUCKET_MEDIA }}
+  PABOLO_BUCKET_NAME_MUSIC_STORAGE: ${{ vars.BUCKET_MUSICDB }}
+  PABOLO_BUCKET_NAME_PUBLIC_STORAGE: ${{ vars.BUCKET_PUBLIC }}
+  PABOLO_BUCKET_NAME_SOUND_STORAGE: ${{ vars.BUCKET_SOUND }}
+  PABOLO_BUCKET_NAME_VOICE_STORAGE: ${{ vars.BUCKET_VOICEDB }}
+  PABOLO_FUNCTIONS_REGION: ${{ vars.GCP_REGION }}
+  PABOLO_BUCKET_PUBLIC_CDN: ${{ vars.BUCKET_PUBLIC_CDN }}
+
+jobs:
+  dev-deps:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+          # Check out the current branch instead of the default merge commit on pull_request event
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "true"
+          run-test: "false"
+          run-live-test: "false"
+
+  dev:
+    needs: dev-deps
+    runs-on: ubuntu-latest
+    environment: dev
+    container:
+      image: mcr.microsoft.com/playwright:v1.40.1-jammy
+    strategy:
+      matrix:
+        # Sync with file apps/app/playwright-ct.config.ts
+        project:
+          - Mobile Chrome
+          - Mobile Safari
+          - Desktop Chrome
+          - webkit
+          - firefox
+    steps:
+      - name: Install git lfs
+        run: |
+          apt-get update
+          apt-get install git-lfs
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+          # Check out the current branch instead of the default merge commit on pull_request event
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "false"
+          run-test: "true"
+          run-live-test: "false"
+          project: ${{ matrix.project }}
+
+  stage-deps:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment: stage
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "true"
+          run-test: "false"
+          run-live-test: "false"
+
+  stage:
+    needs: stage-deps
+    runs-on: ubuntu-latest
+    environment: stage
+    container:
+      image: mcr.microsoft.com/playwright:v1.40.1-jammy
+    strategy:
+      matrix:
+        # Sync with file apps/app/playwright-ct.config.ts
+        project:
+          - Mobile Chrome
+          - Mobile Safari
+          - Desktop Chrome
+          - webkit
+          - firefox
+    steps:
+      - name: Install git lfs
+        run: |
+          apt-get update
+          apt-get install git-lfs
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "false"
+          run-test: "true"
+          run-live-test: "false"
+          project: ${{ matrix.project }}
+
+  prod-deps:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "true"
+          run-test: "false"
+          run-live-test: "false"
+
+  prod:
+    needs: prod-deps
+    runs-on: ubuntu-latest
+    environment: prod
+    container:
+      image: mcr.microsoft.com/playwright:v1.40.1-jammy
+    strategy:
+      matrix:
+        # Sync with file apps/app/playwright-ct.config.ts
+        project:
+          - Mobile Chrome
+          - Mobile Safari
+          - Desktop Chrome
+          - webkit
+          - firefox
+    steps:
+      - name: Install git lfs
+        run: |
+          apt-get update
+          apt-get install git-lfs
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "false"
+          run-test: "true"
+          run-live-test: "false"
+          project: ${{ matrix.project }}
+
+  prod-live:
+    needs: prod-deps
+    runs-on: ubuntu-latest
+    environment: prod
+    container:
+      image: mcr.microsoft.com/playwright:v1.40.1-jammy
+    strategy:
+      matrix:
+        # Sync with file apps/app/playwright-ct.config.ts
+        project:
+          - Desktop Chrome
+    steps:
+      - name: Install git lfs
+        run: |
+          apt-get update
+          apt-get install git-lfs
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+      - name: Live E2E Tests
+        uses: ./.github/actions/e2e_tests
+        with:
+          gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+          deploy-deps: "false"
+          run-test: "false"
+          run-live-test: "true"
+          project: ${{ matrix.project }}

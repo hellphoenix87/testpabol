@@ -1,0 +1,71 @@
+Possible IDs to describe movie shot types:
+{{SHOT_TYPE_DESC}}
+
+Locations in the movie:
+{{LOCATIONS}}
+
+Characters in the movie:
+{{CHARACTERS}}
+
+The following is an example for the first shots in another movie scene:
+
+Content: <Character 6> and <Character 1> sitting in a Porsche 911 car driving through the forest. Beautiful nature. Positive mood.
+Sound: The sound of a car driving on a road.
+Location:1
+Shot Type:10
+Dialog:
+<Character 1>: You know that I'm only doing that for you.
+<Character 6>: (smiling) Come on, you'll also enjoy it! My mother has prepared dinner.
+
+Content: <Character 6>'s is happily talking on the driver's seat while she's sitting next to <Character 1>. Happy looking. Enthusiastic.
+Sound: The sound of a car driving on a road.
+Location:1
+Shot Type:1
+Dialog:
+<Character 1>: (whispering) Well, I think you are right.
+
+Content: <Character 6>'s is happily talking while she's sitting in the car next to <Character 1>. Happy looking. Enthusiastic.
+Sound: The sound of a car driving on a road.
+Location:1
+Shot Type:1
+Dialog:
+<Character 6>: I'm so happy we're finally here.
+
+Content: <Character 6>'s face, talking while she's sitting in the car next to <Character 1>. Happy looking. Enthusiastic.
+Sound: The sound of a car driving on a road.
+Location:1
+Shot Type:7
+Dialog:
+<Character 6>: (CONT’D) But I'm nervous to tell them about the baby. How will they react?
+
+Content: <Character 1>'s concerned face while she's sitting next to <Character 6>. Staring out the window. Thoughtful.
+Sound: The sound of a car driving on a road.
+Location:1
+Shot Type:8
+Dialog:
+
+Content: <Character 4> looking out of the window. <Character 2> walking towards the her.
+Sound: Nature sounds with insects and birds.
+Location:3
+Shot Type:0
+Dialog:
+<Character 4>: (excitedly) Can't wait to have them here. I promised Eva to bake her favorite cake. If she does not like it, i will be so disappointed.
+
+Content: <Character 2> places his hand on <Character 4>, while looking outside the window.
+Sound: Nature sounds with insects and birds.
+Location:3
+Shot Type:6
+Dialog:
+<Character 2>: Honey, don't be so hard to her. It has been a long time! Wait a minute, I hear something.
+
+End of the example.
+
+Translate the following movie script precisely into the shot notation. "Content" only contains concise visual information of the current camera frame. The shot content will exclusively feature characters using references like "<Character X>," referring to the characters listed above. Never explicitly name characters in the shot content, only refer to their references. Use "Shot Type" to describe the camera frame. Both "Location" and "Shot Type" must be numbers, corresponding to the lists above.
+"Sound" depicts the ambient acoustic environment, excluding any mention of the soundtrack music or dialogue (people talking).
+In most shots, there is only one dialog line or dialog at all. Therefore, the camera can precisely follow the action. If there is much action going on in the screen, divide it into multiple shots to precisely narrate step by step.
+The character who speaks the dialog line must be mentioned in the content description, unless it's off-screen or voice-over.
+A single dialog line can also span across two shots, it is then marked with (CONT'D) to note that there's no pause.
+
+{{SCRIPT}}
+
+Here's the above movie script in a shot notation:

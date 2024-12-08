@@ -1,0 +1,47 @@
+---
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linter:
+    uses: ./.github/workflows/00_linter.yaml
+
+  build:
+    needs: linter
+    uses: ./.github/workflows/01_build.yaml
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+
+  test:
+    needs: build
+    uses: ./.github/workflows/02_test.yaml
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+
+  deploy:
+    needs: test
+    uses: ./.github/workflows/03_deploy.yaml
+    permissions:
+      contents: read  # Required to checkout
+      id-token: write # Required to get token for GCP
+      packages: read  # Required to pull platform:main image
+    secrets: inherit
+
+  pr-app:
+    needs: deploy
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    uses: ./.github/workflows/pr-app.yaml
+    permissions:
+      contents: read        # Required to checkout
+      pull-requests: write  # Required to comment on the PR
+    secrets:
+      pr-github-app-id: ${{ secrets.PR_GITHUB_APP_ID }}
+      pr-github-app-private-key: ${{ secrets.PR_GITHUB_APP_PRIVATE_KEY }}

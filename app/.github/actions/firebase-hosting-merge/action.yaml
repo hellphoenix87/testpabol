@@ -1,0 +1,65 @@
+---
+name: Deploy to Firebase Hosting on merge
+
+inputs:
+  gcp-sa-key:
+    description: GCP Service Account Key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4.0.1
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Install dependencies for firebase functions
+      shell: bash
+      working-directory: functions
+      run: npm ci
+
+    - name: Install firebase tools
+      shell: bash
+      run: npm install -g firebase-tools@13.0.3
+
+    - name: Build app project
+      shell: bash
+      run: npm run build:app
+
+    - name: Build backoffice project
+      shell: bash
+      run: npm run build:backoffice
+
+    - name: Set env vars
+      shell: bash
+      run: |
+        echo "GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)" >>$GITHUB_ENV
+
+    - name: Interpolate Firebase Config
+      shell: bash
+      run: |
+          sudo apt-get install -y gettext-base
+          envsubst < .firebaserc.ci | tee .firebaserc
+          envsubst < firebase.json.ci | tee firebase.json
+
+    # see e2e_tests.yml for the explanation of this step bypassing workload identity
+    - name: Decode Google Cloud Service Account key
+      shell: bash
+      run: |
+        echo "${{ inputs.gcp-sa-key }}" | base64 -d > /tmp/creds.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/creds.json" >>"$GITHUB_ENV"
+
+    - name: Deploy Firebase only functions
+      shell: bash
+      run: scripts/functions-deploy.sh
+
+    # Except storage as deployed in e2etest
+    # Except extensions as we cannot deploy `googlecloud/firestore-semantic-search` extension via CI
+    - name: Deploy Firebase except functions and extensions
+      shell: bash
+      run: firebase deploy --except functions,storage,extensions

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Pabolo.ai</title>
+    <%- include('emailStyle'); -%>
+</head>
+<body>
+    <div class="email-body">
+          <div class="container">
+            <div class="content">
+
+              <!-- START CENTERED WHITE CONTAINER -->
+              <div class="email-main">
+
+                <!-- START MAIN CONTENT AREA -->
+                  <div class="wrapper">
+                    <div class="email-message">
+                      <p>
+                        A new NetzDG form is submitted.
+                        <br/>
+                        Submitted data:
+                        <br/>
+                        - Email: <%= email %>
+                        <br/>
+                        - Affiliation: <%= affiliation %>
+                        <br/>
+                        - Issue Type: <%= issueType %>
+                        <br/>
+                        - Content Url: <%= contentUrl %>
+                        <br/>
+                        - Description: <%= description %>
+                        <br/>
+                        - Signature: <%= signature %>
+                      </p>
+                    </div>
+                  </div>
+
+              <!-- END MAIN CONTENT AREA -->
+              </div>
+              <!-- END CENTERED WHITE CONTAINER -->
+              <%- include('emailFooter'); -%>
+
+            </div>
+          </div>
+      </div>
+</body>
+</html>

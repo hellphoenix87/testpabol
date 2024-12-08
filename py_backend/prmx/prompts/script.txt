@@ -1,0 +1,17 @@
+{{META}}
+
+Scene Summaries:
+{{SCENES}}
+
+Location list:
+{{LOCATIONS}}
+
+Character list:
+{{CHARACTERS}}
+
+Screenplay information:
+Only the listed character above can appear as talking voices. Do NOT mention new characters for dialog lines. Only use the above! Only use the locations that are mentioned in the above list, without changing day/night or interior/exterior. Do NOT mention new locations for the scenes! Explain the background and motivation of the characters in dialog. The scene's length is about one minute.
+
+You should now write a screenplay for scene {{SCENE_ID}}. Don't repeat content from a previous or following scene.
+
+FADE IN:

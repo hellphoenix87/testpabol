@@ -1,0 +1,56 @@
+name: Unit Tests
+
+on:
+  workflow_call:
+
+env:
+  PABOLO_BUCKET_NAME_PUBLIC_STORAGE: ${{ vars.BUCKET_PUBLIC }}
+
+jobs:
+  unit_test:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.1
+        with:
+          node-version: 18
+
+      - name: Install dependencies for app and backoffice projects
+        run: npm ci
+
+      - name: Install dependencies for shared folder
+        working-directory: shared
+        run: npm ci
+
+      - name: Install dependencies for firebase functions
+        working-directory: functions
+        run: npm ci
+
+      - name: Run Vitest for app project
+        run: npm run test:unit:app
+
+      - name: Run Vitest for backoffice project
+        run: npm run test:unit:backoffice
+
+      - name: Run Vitest for frontend folder
+        run: npm run test:unit:frontend
+
+      - name: Run Unit tests for shared folder
+        run: npm run test:unit:shared
+
+      - name: Run Unit tests for firebase functions
+        run: npm run test:unit:functions
+
+      - name: Upload artifacts for shared folder tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: acoustic-env-test-results
+          path: shared/videoCreator/tests/acousticEnvResults/*
+          if-no-files-found: error

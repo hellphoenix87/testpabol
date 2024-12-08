@@ -1,0 +1,42 @@
+---
+name: Cloud functions cleaner
+on:
+  schedule:
+    - cron: "0 0,1,2,3,4 * * *"
+  workflow_dispatch:
+
+env:
+  GOOGLE_CLOUD_PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT }}
+
+jobs:
+  cleaner:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Let each env continue
+      matrix:
+        env:
+          - dev
+          - stage
+          - prod
+    environment: ${{ matrix.env }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: "0" # All history for all branches and tags
+
+      # Using the same GCP Service Account as the one used to deploy the app
+      - name: Decode Google Cloud Service Account key
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" | base64 -d > /tmp/creds.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/creds.json" >>"$GITHUB_ENV"
+
+      - name: Dependencies
+        run: |
+          pip install GitPython==3.1.37
+          pip install google-cloud-functions==1.13.3
+
+      - name: Cleaner
+        run: python .github/functions-cleaner.py

@@ -1,0 +1,31 @@
+Example list of characters:
+Name: Michael Allister
+Visual Description: 45 year old man. Dark, balding hair. Blue, friendly eyes. Yellow, worn jacket. Angry face. Obese body shape. Weird hair style.
+Role: Main protagonist who is torn between his love for his wife and his love for finding the missing treasure.
+
+Name: Dr. Sarah McDonald
+Visual Description: 9 year old girl. Blonde, long hair with braids. Edgy face with red lipstick. Wears a pink dress. Has a scar on her left cheek.
+Role: Michael's daughter who is unclear about her feelings for her father.
+
+Name: Zoe Harper
+Visual Description: 34 year old woman. Auburn, curly hair that is often held back in a messy bun. Dark, deep-set eyes.
+Role: The cynical local historian, who guides Michael on his journey, but has hidden motives.
+
+Name: Arthur Black
+Visual Description: 69 year old man. Grey hear, balding receding hairline.
+Role: The radio newscaster on whose show Zoe finds out about the treasure.
+
+Name: Officer Jordan
+Visual Description: 31 year old man in a police uniform. Mustache. Blue eyes.
+Role: Supporting role. Standing at the police check next to Michael's house.
+
+Name: Lucas Henderson
+Visual Description: 51 year old man. Short, grey hair and a matching mustache. Sharp eyes. Dresses in a classic detective's trench coat and hat.
+Role: The relentless police officer hot on Michael's trail, believing Michael to be a law breaker rather than a treasure hunter.
+
+Here's the movie for which you should list the characters:
+
+Plot: "{{PLOT}}"
+
+Write a character list of all required characters in the movie PRECISELY in the format of the example character shown above. Don't append information before or after their names (like "Supporting Actor"). Don't use sentences, only key points. Only individual characters, no group of characters (like "friends", "family members"). If the name of a character is not mentioned in the plot, invent a new name (first and last name). Also include supporting roles, which are not explicitly mentioned in the plot (like family members, narrator, friends and everyone else who has a dialog line in the movie). Start every character in the list with "Name:".
+The list contains all characters which will have a spoken line in the movie. Usually, a movie has about 10 characters. It can be less if the movie is centered around few characters. Finish your list if you think you added all characters.

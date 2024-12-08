@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.block.relative.w-full > button[type="button"] > span:last-child > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.swiper-slide {
+  width: auto !important;
+}

@@ -1,0 +1,43 @@
+name: Code Quality Check
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.1.1
+        with:
+          lfs: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.1
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install dependencies for firebase functions
+        working-directory: functions
+        run: npm ci
+
+      - name: Run ESLint for app
+        run: npm run lint:app
+
+      - name: Run ESLint for backoffice
+        run: npm run lint:backoffice
+
+      - name: Run ESLint for firebase functions
+        run: npm run lint:functions
+
+      - name: Run ESLint for Shared directory
+        run: npm run lint:shared
+
+      - name: Run Prettier for apps
+        run: npm run prettier:apps
+
+      - name: Run Prettier for firebase functions
+        run: npm run prettier:functions

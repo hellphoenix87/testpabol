@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  // No users can write to it. Only team members with admin access can write to it.
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,2 @@
+functions/assets/** filter=lfs diff=lfs merge=lfs -text
+shared/assets/** filter=lfs diff=lfs merge=lfs -text

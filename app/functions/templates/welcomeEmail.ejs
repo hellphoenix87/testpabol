@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Pabolo.ai</title>
+    <%- include('emailStyle'); -%>
+</head>
+<body>
+    <div class="email-body">
+          <div class="container">
+            <div class="content">
+    
+              <!-- START CENTERED WHITE CONTAINER -->
+              <div class="email-main">
+    
+                <!-- START MAIN CONTENT AREA -->
+                  <div class="wrapper">
+                    <div class="email-message">
+                        <p>Hello <%= displayName %>,</p>
+    
+                        <p>Welcome to Pabolo.ai! We are thrilled to have you as a part of our community.</p>
+                            
+                        <p>Before you start using our services, please take a moment to review our Terms of Use attached to this email.</p>
+                            
+                        <p>By using our services, you agree to abide by our Terms of Use, so it's important to familiarize yourself with them.</p> 
+                            
+                        <p>Once again, welcome to Pabolo.ai. We look forward to providing you with an exceptional experience!</p>
+                            
+                        <p>Best regards,</p>
+                            
+                        <p>Pabolo.ai team<br>
+                    </div>
+                  </div>
+
+              <!-- END MAIN CONTENT AREA -->
+              </div>
+              <!-- END CENTERED WHITE CONTAINER -->
+              <%- include('emailFooter'); -%>
+    
+            </div>
+          </div>
+      </div>
+</body>
+</html>

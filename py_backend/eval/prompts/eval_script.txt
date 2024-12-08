@@ -1,0 +1,20 @@
+This is a movie script:
+{{SCRIPT}}
+
+Summarize this script in a few sentences: <<SCRIPT_SUMMARY, max_tokens=500>>
+
+Now here's another summary for the script:
+{{SCENE_SUMMARY}}
+
+You should analyze how well the both summaries align. Do they describe the same script?
+
+Analysis: <<ANALYSIS, max_tokens=500>>
+
+Now rate this analysis from 1 to 4:
+
+1 - It's a completely different story
+2 - Some elements are followed, but the general story is different
+3 - The story is the comparable, but essential parts are missing or changed
+4 - All parts in the summary are present in the script without much change.
+
+Rating: <<RATING, max_tokens=2>>

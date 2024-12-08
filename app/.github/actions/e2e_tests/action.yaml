@@ -1,0 +1,135 @@
+---
+name: E2E Tests
+
+inputs:
+  gcp-sa-key:
+    description: GCP Service Account Key
+    required: true
+  deploy-deps:
+    description: Deploy Firebase Target Dependencies
+    required: true
+    default: "false"
+  run-test:
+    description: Run e2etest
+    required: true
+    default: "false"
+  run-live-test:
+    description: Run live e2etest
+    required: true
+    default: "false"
+  project:
+    description: Playwright project (browser) to run
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4.0.1
+      with:
+        node-version: 18
+        cache: npm
+
+    - name: Fix git repository ownership
+      shell: bash
+      run: git config --global --add safe.directory $(realpath .)
+
+    - name: Fix permission inside the container
+      shell: bash
+      run: chown -R $(id -u):$(id -g) .
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Install Chrome
+      if: inputs.project == 'Desktop Chrome' || inputs.project == 'Mobile Chrome'
+      shell: bash
+      run: npx playwright install chrome
+
+    - name: Install dependencies for firebase functions
+      shell: bash
+      working-directory: functions
+      run: npm ci
+
+    - name: Install firebase tools
+      shell: bash
+      run: npm install -g firebase-tools@13.0.3
+
+    - name: Build functions
+      shell: bash
+      run: npm run build:functions
+
+    # `google-github-actions/auth` does not support authentication to the Firebase Admin Node.js SDK
+    # Only Service Account Keys are supported (https://github.com/firebase/firebase-admin-node/issues/1377)
+    - name: Decode Google Cloud Service Account key
+      shell: bash
+      run: |
+        echo "${{ inputs.gcp-sa-key }}" | base64 -d > /tmp/creds.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/creds.json" >>"$GITHUB_ENV"
+
+    - name: Set env vars
+      shell: bash
+      run: |
+        echo "GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)" >>$GITHUB_ENV
+
+    - name: Interpolate Firebase Config
+      shell: bash
+      run: |
+        if ! command -v envsubst; then
+            apt-get update
+            apt-get install -y gettext-base
+        fi
+        envsubst < .firebaserc.ci | tee .firebaserc
+        envsubst < firebase.json.ci | tee firebase.json
+
+    - name: Deploy Firebase Target Dependencies
+      if: inputs.deploy-deps == 'true'
+      uses: nick-fields/retry@v3.0.0
+      with:
+        timeout_seconds: 300
+        retry_wait_seconds: 15
+        max_attempts: 5
+        retry_on: error
+        command: |
+          # Deploy storage rules
+          # There is a limit of 2500 storage rules, `--force` will remove the oldest 10
+          firebase deploy --only storage --project "$GOOGLE_CLOUD_PROJECT" --debug --force
+          # Deploy firestore rules
+          firebase deploy --only firestore:rules --project "$GOOGLE_CLOUD_PROJECT" --debug
+          # e2etest relies on addUser function to create users in firestore
+          firebase deploy --only functions:addUser,functions:R${GIT_SHA_SHORT}_kitchen,functions:R${GIT_SHA_SHORT}_kitchen_pubsub --debug
+          # E2E tests depend on bakeVideo and cookVideo functions
+
+    - name: Run E2E Creations Tests
+      if: inputs.run-test == 'true'
+      shell: bash
+      env:
+        # Solving this bug by overriding $HOME: https://github.com/microsoft/playwright/issues/6500
+        HOME: /root
+      run: |
+          DEPLOYED_FUNCTIONS=bakeVideo,cookVideo \
+          firebase emulators:exec \
+              --only functions \
+              --project "$GOOGLE_CLOUD_PROJECT" \
+              "npm run test:e2e:mock:app -- tests/e2e/creation/desktop/NewCreation.spec.tsx tests/e2e/creation/mobile/NewCreation.spec.tsx -- --project '${{ inputs.project }}'"
+
+    - name: Run Live E2E Creations Tests
+      if: inputs.run-live-test == 'true'
+      shell: bash
+      env:
+        # Solving this bug by overriding $HOME: https://github.com/microsoft/playwright/issues/6500
+        HOME: /root
+      run: |
+          DEPLOYED_FUNCTIONS=bakeVideo,cookVideo \
+          firebase emulators:exec \
+              --only functions \
+              --project "$GOOGLE_CLOUD_PROJECT" \
+              "npm run test:e2e:default:app -- tests/e2e/creation/desktop/NewCreationWithEdit.spec.tsx -- --project '${{ inputs.project }}'"
+
+    - uses: actions/upload-artifact@v4.3.0
+      if: (inputs.run-test == 'true' || inputs.run-live-test == 'true') && always()
+      with:
+        name: "playwright-report-${{ github.job }}-${{ inputs.project }}"
+        path: apps/app/playwright-report/
+        retention-days: 30
